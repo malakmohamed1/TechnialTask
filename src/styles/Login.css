@@ -1,0 +1,85 @@
+/* Login.css */
+
+/* General Page Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4fa; /* Light blue background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container for the Login Form */
+.login-container {
+    background-color: #ffffff; /* White background */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: left;
+}
+
+/* Form Titles */
+h2 {
+    color: #1e3a8a; /* Darker blue */
+    margin-bottom: 20px;
+    text-align:left;
+}
+
+/* Input Fields */
+.login-container input[type="email"],
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #d1d9e6; /* Light blue border */
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.login-container input[type="email"]:focus,
+.login-container input[type="password"]:focus {
+    background-color: #ebf2f5; /* Light blue background on focus */
+    border-color: #5681df; /* Medium blue border on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Login Button */
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #052e87; /* Medium blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+    background-color: #a2aac2; /* Darker blue on hover */
+}
+
+/* Link for Register */
+.login-container a {
+    color: #2563eb;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+}
+
+.login-container a:hover {
+    color: #1e3a8a;
+    text-decoration: underline;
+}
+
+/* Error Message Styling */
+.message {
+    color: red;
+    margin-top: 10px;
+}
