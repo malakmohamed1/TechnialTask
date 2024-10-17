@@ -7,137 +7,119 @@ import '../styles/TaskList.css';
 function TaskList() {
     const [tasks, setTasks] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentTask, setCurrentTask] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [currentTask, setCurrentTask] = useState(null); // Track the task to edit
 
-    // Fetch tasks only if accountId is present
     useEffect(() => {
-        const accountId = localStorage.getItem('accountId');
-        console.log("Account ID from Local Storage:", accountId);
-        
-        if (accountId) {
-            fetchTasks();
-        } else {
-            console.error("No Account ID found. Please log in.");
-        }
-    }, []); // Run once when component mounts
+        fetchTasks();
+    }, []);
 
     const fetchTasks = async () => {
-        setLoading(true); // Start loading state
-        console.log("Fetching tasks...");
-
         try {
-            const accountId = localStorage.getItem('accountId');
-            console.log("Account ID:", accountId);
-            
-            if (!accountId) {
-                console.error("Account ID is not available.");
-                return; // Early return if account ID is missing
-            }
-            console.log("before api");
-
-            const response = await axios.get(`http://localhost:8080/api/tasks?accountId=${accountId}`, { timeout: 5000 });
-            console.log("Response from API:", response);
-
-            if (Array.isArray(response.data)) {
-                setTasks(response.data); // Update tasks state
-                console.log("Tasks set successfully:", response.data);
-            } else {
-                console.error("Unexpected response format:", response.data);
-            }
+            const accountId = localStorage.getItem('accountId'); // Get the account ID
+            const response = await axios.get(`http://localhost:8080/api/tasks?accountId=${accountId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            setTasks(response.data); // Set tasks from backend response
         } catch (error) {
-            console.error('Error fetching tasks:', error);
-        } finally {
-            setLoading(false); // End loading state
-            console.log("fetchTasks complete, loading set to false");
+            console.error('Error fetching tasks', error);
         }
     };
 
+    // Function to add a new task
     const addTask = async (task) => {
         try {
-            const accountId = localStorage.getItem('accountId');
+            const accountId = localStorage.getItem('accountId'); // Get the account ID
             const response = await axios.post('http://localhost:8080/api/tasks', {
                 ...task,
-                account: { id: accountId }
+                account: { id: accountId } // Associate with the user's account ID
+            }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            setTasks((prevTasks) => [...prevTasks, response.data]);
+            setTasks((prevTasks) => [...prevTasks, response.data]); // Add the new task to the list
         } catch (error) {
             console.error('Error adding task', error);
         }
     };
 
+    // Function to update an existing task
     const updateTask = async (task) => {
         try {
-            const response = await axios.put(`http://localhost:8080/api/tasks/${task.id}`, task);
-            setTasks((prevTasks) => prevTasks.map(t => (t.id === task.id ? response.data : t)));
+            const response = await axios.put(`http://localhost:8080/api/tasks/${task.id}`, task, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            setTasks((prevTasks) => prevTasks.map(t => (t.id === task.id ? response.data : t))); // Update the task in the list
         } catch (error) {
             console.error('Error updating task', error);
         }
     };
 
+    // Function to delete a task
     const deleteTask = async (taskId) => {
-        try {
-            await axios.delete(`http://localhost:8080/api/tasks/${taskId}`);
-            setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
-        } catch (error) {
-            console.error('Error deleting task', error);
+        const confirmed = window.confirm("Are you sure you want to delete this task?"); // Confirm deletion
+        if (confirmed) {
+            try {
+                await axios.delete(`http://localhost:8080/api/tasks/${taskId}`, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+                setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId)); // Remove the deleted task from the list
+            } catch (error) {
+                console.error('Error deleting task', error);
+            }
         }
     };
 
     const openEditModal = (task) => {
-        setCurrentTask(task);
-        setIsModalOpen(true);
+        setCurrentTask(task); // Set the current task for editing
+        setIsModalOpen(true); // Open the modal
     };
 
     const handleModalSave = (task) => {
         if (currentTask) {
-            updateTask(task);
+            updateTask(task); // Update the task if editing
         } else {
-            addTask(task);
+            addTask(task); // Otherwise, add a new task
         }
-        setIsModalOpen(false);
-        setCurrentTask(null);
+        setIsModalOpen(false); // Close the modal
+        setCurrentTask(null); // Reset current task
     };
-
-    if (loading) {
-        return <div className="task-list-container"><p>Loading tasks...</p></div>; // Render loading message
-    }
 
     return (
         <div className="task-list-container">
             <h2 className="task-list-title">Tasks</h2>
             <div className="add-task-container">
-                <button className="add-task-button" onClick={() => {
-                    setCurrentTask(null);
-                    setIsModalOpen(true);
-                }}>
-                    <MdAddCircle /> Add New Task
+                <button 
+                    className="add-task-button" 
+                    onClick={() => {
+                        setCurrentTask(null); // Reset current task for a new task
+                        setIsModalOpen(true); // Open the modal
+                    }}
+                >
+                    <MdAddCircle /> Add Task
                 </button>
             </div>
             <ul className="task-list">
-                {tasks.length === 0 ? (
-                    <p>No tasks available.</p>
-                ) : (
-                    tasks.map((task) => (
-                        <li key={task.id} className="task-item">
-                            <div className="task-actions">
-                                <MdEdit 
-                                    className="task-icon" 
-                                    onClick={() => openEditModal(task)} 
-                                />
-                                <MdDelete 
-                                    className="task-icon" 
-                                    onClick={() => deleteTask(task.id)} 
-                                />
-                            </div>
+                {tasks.map((task) => (
+                    <li key={task.id} className="task-item">
+                        <div className="task-actions">
+                            <MdEdit 
+                                className="task-icon" 
+                                onClick={() => openEditModal(task)} // Open modal for editing
+                            />
+                            <MdDelete 
+                                className="task-icon" 
+                                onClick={() => deleteTask(task.id)} // Delete task
+                            />
+                        </div>
+                        <div className="task-content">
                             <div className="task-title">{task.title}</div>
                             <div className="task-description">{task.description}</div>
                             <div className="task-status">Status: {task.status}</div>
                             <div className="task-due-date">Due: {task.dueDate}</div>
-                        </li>
-                    ))
-                )}
+                        </div>
+                    </li>
+                ))}
             </ul>
+            {isModalOpen && <div className="overlay open" onClick={() => setIsModalOpen(false)}></div>}
             <TaskModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 

@@ -1,32 +1,42 @@
-/* src/components/TaskModal.css */
-.modal-overlay {
+.task-modal {
+    display: none; /* Hidden by default */
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the modal */
+    width: 300px; /* Width of the modal */
+    z-index: 1000; /* Make sure it appears above other elements */
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.task-modal.open {
+    display: block; /* Show modal when open */
 }
 
 .modal-content {
-    background: white;
     padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 500px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px; /* Space between buttons and form */
 }
 .modal-button{
-    width: 50%;
-    padding: 10px;
-    margin: 10px;
-    background-color: #052e87; /* Medium blue */
+    background-color: #052e87;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    padding: 10px 15px;
     cursor: pointer;
-    transition: background-color 0.3s;
+}
+label,.input{
+    margin: 7px;
+   padding:5px;
+}
+.input{
+    border-color: black;
+    border-radius: 5px;
 }
