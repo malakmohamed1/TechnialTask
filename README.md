@@ -23,7 +23,7 @@ This project is a Task Management Application with a React frontend and a Spring
 - Java
 - JPA/Hibernate
 - MySQL (or other relational databases)
-- JSON Web Tokens (JWT) for security
+
 
 ## Getting Started
 
